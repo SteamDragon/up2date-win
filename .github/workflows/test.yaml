@@ -18,11 +18,18 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
+          name: Test
           path: .\artifacts\
+      - name: Extract Action
+        uses: ihiroky/extract-action@v1
+        with:
+          file_path: .\artifacts\Test.zip
+          extract_dir: .\Test\
+          verbose: true
 
       - name: vstest-action
         uses: microsoft/vstest-action@v1.0.0
         with:
           testAssembly: "**\\Up2dateTests.dll"
-          searchFolder: "Up2dateService\\Tests\\Up2dateTests\\bin"
+          searchFolder: .\Test\
 
