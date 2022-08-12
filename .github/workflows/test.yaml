@@ -20,12 +20,6 @@ jobs:
         with:
           name: Test
           path: .\artifacts\
-      - name: Extract Action
-        uses: ihiroky/extract-action@v1
-        with:
-          file_path: .\artifacts\Test.zip
-          extract_dir: .\Test\
-          verbose: true
 
       - name: vstest-action
         uses: microsoft/vstest-action@v1.0.0
