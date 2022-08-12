@@ -19,13 +19,9 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Test
-          path: .\Test.zip
-      - name: Just Extract
-        uses: brunoborges/justextract@v1
-        with:
-          file: .\Test.zip
+          path: .\Test\
       - name: vstest-action
         uses: microsoft/vstest-action@v1.0.0
         with:
-          testAssembly: "**\\Up2dateTests.dll"
+          testAssembly: "Test\\Up2dateTests.dll"
 
