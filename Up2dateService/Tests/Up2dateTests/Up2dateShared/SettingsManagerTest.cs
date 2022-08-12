@@ -45,10 +45,15 @@ namespace Up2dateTests.Up2dateShared
         [TestMethod]
         public void SelectedIssuers_Test_CheckWorkability()
         {
+            //Arrange
+            var expectedIssuers = new List<string> { "rts" };
             //Act
             var selectedIssuers = _settings.SelectedIssuers;
             //Assert
-            CollectionAssert.AreEqual(new List<string> { "rts" }, selectedIssuers);
+            for (var index = 0; index < selectedIssuers.Count; index++)
+            {
+                Assert.AreEqual(expectedIssuers[index], selectedIssuers[index], $"Item at index {index} are not equal. Expected: {expectedIssuers[index]}. Was {selectedIssuers[index]}");
+            }
         }
 
 
