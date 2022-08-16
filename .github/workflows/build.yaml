@@ -60,7 +60,7 @@ jobs:
         shell: cmd
         run: devenv "%SLN_PATH%" /build "Release"
         
-      - name: Build Installers
+      - name: Build Installer x86
         shell: cmd
         env:
           WIX_PATH_CANDLE: "C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe"
@@ -68,7 +68,15 @@ jobs:
         run: |
               cd Up2dateService\Up2DateSetup
               MSBuild.exe .\setup32\Up2DateSetup.wixproj /p:Configuration=Release
+      - name: Build Installer x64
+        shell: cmd
+        env:
+          WIX_PATH_CANDLE: "C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe"
+          WIX_PATH_LIGHT: "C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe"
+        run: |
+              cd Up2dateService\Up2DateSetup
               MSBuild.exe .\setup64\Up2DateSetup.wixproj /p:Configuration=Release
+
         
         
       - name: Upload x64 artifacts
