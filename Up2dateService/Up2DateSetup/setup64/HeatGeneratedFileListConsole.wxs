@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="INSTALLFOLDER">
+            <Component Id="cmp2F5EED07769D01188B6E1DDA2EC5B3FB" Guid="*">
+                <File Id="filB15AFBDD7410AD56772D69B1FD1048A0" KeyPath="yes" Source="$(var.HarvestPathConsole)\Hardcodet.NotifyIcon.Wpf.dll" />
+            </Component>
+            <Component Id="cmpB0D165C88607DEE1E5F59C55D0AE9F42" Guid="*">
+                <File Id="fil0C16AA47649C2BACAAD688607A9276CC" KeyPath="yes" Source="$(var.HarvestPathConsole)\locbaml.exe" />
+            </Component>
+            <Component Id="cmpDF2A173873CB2DF4B359397F026B691C" Guid="*">
+                <File Id="filF77BADE6C443F07005CCC8598C0BF253" KeyPath="yes" Source="$(var.HarvestPathConsole)\Microsoft.Toolkit.Uwp.Notifications.dll" />
+            </Component>
+            <Component Id="cmpF4E298CFF730F398D2990C582E79A49E" Guid="*">
+                <File Id="fil57A97586B2887B74AF2D2C750F465FCD" KeyPath="yes" Source="$(var.HarvestPathConsole)\Microsoft.Toolkit.Uwp.Notifications.pdb" />
+            </Component>
+            <Component Id="cmp3A99A623A71A716A198559E0C9D59400" Guid="*">
+                <File Id="filE6242AE03AF2509440ADF395C76688A4" KeyPath="yes" Source="$(var.HarvestPathConsole)\System.ValueTuple.dll" />
+            </Component>
+            <Component Id="cmp705B044587629A5327403774B653029A" Guid="*">
+                <File Id="filC2E5343D1EDFA42A2C59BABA6339F7D4" KeyPath="yes" Source="$(var.HarvestPathConsole)\Up2dateConsole.exe" />
+            </Component>
+            <Component Id="cmp7B0C0D6C71675B45E58950A4E5D3D95E" Guid="*">
+                <File Id="fil8DF916750010A62AD75DA2E1855AFF20" KeyPath="yes" Source="$(var.HarvestPathConsole)\Up2dateConsole.exe.config" />
+            </Component>
+            <Component Id="cmpF496E9EDA87DBAF5C13316B6B2B0B3F3" Guid="*">
+                <File Id="fil68D0BD4F4795490AECA2585AD4BF9AE8" KeyPath="yes" Source="$(var.HarvestPathConsole)\Up2dateConsole.pdb" />
+            </Component>
+            <Directory Id="dir7CB7E03714D9D7C1BF30BD3C91566568" Name="en-US">
+                <Component Id="cmp7B356182B26F08AAED2685DCC14EF037" Guid="*">
+                    <File Id="fil4121D9416F1EB66FB33201C230829AD1" KeyPath="yes" Source="$(var.HarvestPathConsole)\en-US\Up2dateConsole.resources.dll" />
+                </Component>
+            </Directory>
+            <Directory Id="dirD537E8BD60E960EB37BCA816F9AFAB0D" Name="ru-RU">
+                <Component Id="cmpAAABF9EE2A11CF5C18568C0EF8A635DF" Guid="*">
+                    <File Id="filA1AB3469491F5F73C57C834E29BBA83F" KeyPath="yes" Source="$(var.HarvestPathConsole)\ru-RU\Up2dateConsole.resources.dll" />
+                </Component>
+            </Directory>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="HeatGeneratedConsole">
+            <ComponentRef Id="cmp2F5EED07769D01188B6E1DDA2EC5B3FB" />
+            <ComponentRef Id="cmpB0D165C88607DEE1E5F59C55D0AE9F42" />
+            <ComponentRef Id="cmpDF2A173873CB2DF4B359397F026B691C" />
+            <ComponentRef Id="cmpF4E298CFF730F398D2990C582E79A49E" />
+            <ComponentRef Id="cmp3A99A623A71A716A198559E0C9D59400" />
+            <ComponentRef Id="cmp705B044587629A5327403774B653029A" />
+            <ComponentRef Id="cmp7B0C0D6C71675B45E58950A4E5D3D95E" />
+            <ComponentRef Id="cmpF496E9EDA87DBAF5C13316B6B2B0B3F3" />
+            <ComponentRef Id="cmp7B356182B26F08AAED2685DCC14EF037" />
+            <ComponentRef Id="cmpAAABF9EE2A11CF5C18568C0EF8A635DF" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

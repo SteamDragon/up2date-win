@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.10</ProductVersion>
+    <ProjectGuid>6233cd4f-8d21-4c0d-a2ee-7bad90f14113</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>Up2DateSetup</OutputName>
+    <OutputType>Package</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>HarvestPathService=..\..\Up2dateService\bin\$(Configuration);HarvestPathConsole=..\..\Up2dateConsole\bin\$(Configuration)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>    
+    <DefineConstants>HarvestPathService=..\..\Up2dateService\bin\$(Configuration);HarvestPathConsole=..\..\Up2dateConsole\bin\$(Configuration)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Product.wxs" />
+    <Compile Include="HeatGeneratedFileListConsole.wxs" />
+    <Compile Include="HeatGeneratedFileListService.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Up2dateConsole\Up2dateConsole.csproj">
+      <Name>Up2dateConsole</Name>
+      <Project>{06a754b8-b045-40fe-badb-2f0469bc43ba}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Up2dateService\Up2dateService.csproj">
+      <Name>Up2dateService</Name>
+      <Project>{4c1f9730-09e5-4694-864b-4b39aa93d813}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
+  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
+    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
+  </Target>
+  <Target Name="BeforeBuild">
+    <HeatDirectory Directory="..\..\Up2dateConsole\bin\$(Configuration)" PreprocessorVariable="var.HarvestPathConsole" OutputFile="HeatGeneratedFileListConsole.wxs" ComponentGroupName="HeatGeneratedConsole" DirectoryRefId="INSTALLFOLDER" AutogenerateGuids="true" ToolPath="$(WixToolPath)" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" RunAsSeparateProcess="true" />
+    <!--<HeatDirectory Directory="..\Up2dateService\bin\$(Configuration)" PreprocessorVariable="var.HarvestPathService" OutputFile="HeatGeneratedFileListService.wxs" ComponentGroupName="HeatGeneratedService" DirectoryRefId="INSTALLFOLDER" AutogenerateGuids="true" ToolPath="$(WixToolPath)" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" RunAsSeparateProcess="true" />
+    <Exec Command="copy ..\Up2dateService\bin\Up2dateService.exe ..\Up2dateService\bin\$(Configuration)\Up2dateService.exe"/>-->
+  </Target>
+</Project>

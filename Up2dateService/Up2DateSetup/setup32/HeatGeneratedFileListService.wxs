@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="INSTALLFOLDER">
+            <Component Id="cmpBC4FC00A26E7D32479D42D3411317FC5" Guid="*">
+                <File Id="fil90A8AAD9FC612906D405476D61CEA3F4" KeyPath="yes" Source="$(var.HarvestPathService)\Newtonsoft.Json.dll" />
+            </Component>
+            <Component Id="cmp125C379E185231EFADA4CB4301BD0A9E" Guid="*">
+                <File Id="fil3A2F44A7730E98D18E0948B3261DFABD" KeyPath="yes" Source="$(var.HarvestPathService)\Newtonsoft.Json.xml" />
+            </Component>
+            <Component Id="cmp53B4872FC086D0AB9B48CDF5E132E995" Guid="*">
+                <File Id="filC36498FE25EA63CCB2C813D325FE7D52" KeyPath="yes" Source="$(var.HarvestPathService)\Up2dateClient.dll" />
+            </Component>
+            <Component Id="cmpF7920F1CE0FC1015BE077740287FE6D8" Guid="*">
+                <File Id="fil70B858134FCF4B1DF3B00C38FC8CF7D8" KeyPath="yes" Source="$(var.HarvestPathService)\Up2dateClient.pdb" />
+            </Component>
+            <Component Id="cmpA8F83484F290516A8FA1D61FB6F962A5" Guid="*">
+                <File Id="filDC341FC8EA0E67C59AE547FB6C64A5FC" KeyPath="yes" Source="$(var.HarvestPathService)\Up2dateService.exe.config" />
+            </Component>
+            <Component Id="cmp4016B4A72CBD98F6928E132C4DFEAFEF" Guid="*">
+                <File Id="fil37245966CB3AB39A84E2572231B67AE2" KeyPath="yes" Source="$(var.HarvestPathService)\Up2dateService.pdb" />
+            </Component>
+            <Component Id="cmp38C25FE5C12442768BFEEED6DB2B00A7" Guid="*">
+                <File Id="fil9C2ED6C928D0C2CF5520D41BDC106793" KeyPath="yes" Source="$(var.HarvestPathService)\Up2dateShared.dll" />
+            </Component>
+            <Component Id="cmp008608803E48841F50AF91DAA2FD3770" Guid="*">
+                <File Id="fil136C424470558A7910CC8AA4705D2751" KeyPath="yes" Source="$(var.HarvestPathService)\Up2dateShared.pdb" />
+            </Component>
+            <Directory Id="dirCA7DE8F3F2668613F750A9B6868F7622" Name="cppclient">
+                <Directory Id="dirBF11C682161AD201D16F9252B97D0425" Name="bin-x64">
+                    <Component Id="cmp0317A37D7C6D79759DC49C53C90E0F6F" Guid="*">
+                        <File Id="fil05468F7B19400DAFAD10211D44AAC0E2" KeyPath="yes" Source="$(var.HarvestPathService)\cppclient\bin-x64\libcrypto-1_1-x64.dll" />
+                    </Component>
+                    <Component Id="cmpC680E878C86B4196E5938860BDEC955F" Guid="*">
+                        <File Id="fil82BDC08D1FF83058B497650B998D19AA" KeyPath="yes" Source="$(var.HarvestPathService)\cppclient\bin-x64\libssl-1_1-x64.dll" />
+                    </Component>
+                    <Component Id="cmpC5E6EECECD19CD6610A01DC1835E279A" Guid="*">
+                        <File Id="fil2773B18AF2134977B5B6EC7DA47E72E2" KeyPath="yes" Source="$(var.HarvestPathService)\cppclient\bin-x64\wrapperdll.dll" />
+                    </Component>
+                </Directory>
+                <Directory Id="dirFCAD20FB24982855E72EEB8A1D90A0AD" Name="bin-x86">
+                    <Component Id="cmp86585D2568CA448F555BE4A303F066E8" Guid="*">
+                        <File Id="filFBC51542587F2ACD20A831E83448BE08" KeyPath="yes" Source="$(var.HarvestPathService)\cppclient\bin-x86\libcrypto-1_1.dll" />
+                    </Component>
+                    <Component Id="cmp438B240817B52911833EF2EB9C46F049" Guid="*">
+                        <File Id="filD921637C4EB92413555912F60C4BB3BF" KeyPath="yes" Source="$(var.HarvestPathService)\cppclient\bin-x86\libssl-1_1.dll" />
+                    </Component>
+                    <Component Id="cmp3316CE31642104E06D24DA1E7E95289B" Guid="*">
+                        <File Id="fil2842E7F04A80398CA33F57D627A51687" KeyPath="yes" Source="$(var.HarvestPathService)\cppclient\bin-x86\wrapperdll.dll" />
+                    </Component>
+                </Directory>
+            </Directory>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="HeatGeneratedService">
+            <ComponentRef Id="cmpBC4FC00A26E7D32479D42D3411317FC5" />
+            <ComponentRef Id="cmp125C379E185231EFADA4CB4301BD0A9E" />
+            <ComponentRef Id="cmp53B4872FC086D0AB9B48CDF5E132E995" />
+            <ComponentRef Id="cmpF7920F1CE0FC1015BE077740287FE6D8" />
+            <ComponentRef Id="cmpA8F83484F290516A8FA1D61FB6F962A5" />
+            <ComponentRef Id="cmp4016B4A72CBD98F6928E132C4DFEAFEF" />
+            <ComponentRef Id="cmp38C25FE5C12442768BFEEED6DB2B00A7" />
+            <ComponentRef Id="cmp008608803E48841F50AF91DAA2FD3770" />
+            <ComponentRef Id="cmp0317A37D7C6D79759DC49C53C90E0F6F" />
+            <ComponentRef Id="cmpC680E878C86B4196E5938860BDEC955F" />
+            <ComponentRef Id="cmpC5E6EECECD19CD6610A01DC1835E279A" />
+            <ComponentRef Id="cmp86585D2568CA448F555BE4A303F066E8" />
+            <ComponentRef Id="cmp438B240817B52911833EF2EB9C46F049" />
+            <ComponentRef Id="cmp3316CE31642104E06D24DA1E7E95289B" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

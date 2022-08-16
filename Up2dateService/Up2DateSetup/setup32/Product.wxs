@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define ProductName="RITMS UP2DATE Client" ?>
+  <?define ProductVersion="1.0.3" ?>
+  <?define ProductCode="cc55bc63-b006-4a34-bd67-03d78fe5d4ea"?>
+  <?define UpgradeCode="ed7daba2-02ad-46d3-87b0-7bcf80b17586"?>
+  <?define Manufacturer="RTSoft"?>
+  <Product Id="$(var.ProductCode)" Name="$(var.ProductName)" Language="1033" Version="$(var.ProductVersion)"
+           Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.UpgradeCode)">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+    <Feature Id="UP2DATEConsole" Title="UP2DATE Console" Level="1">
+      <ComponentGroupRef Id="HeatGeneratedConsole" />
+    </Feature>
+    <Feature Id="UP2DATEService" Title="UP2DATE Service" Level="1">
+      <ComponentGroupRef Id="HeatGeneratedService" />
+    </Feature>
+    <Feature Id="UP2DATEServiceInstall" Title="UP2DATEService Install" Level="1">
+      <ComponentGroupRef Id="setupGroup" />
+    </Feature>
+    <Icon Id="icon.ico" SourceFile="..\..\Up2dateService\Logo.ico" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    <UI>
+      <UIRef Id="WixUI_Minimal" />
+    </UI>
+    <CustomAction Id="EXECUTE_AFTER_FINALIZE"
+                  Execute="immediate"
+                  Impersonate="no"
+                  Return="asyncNoWait"
+                  FileKey="filC2E5343D1EDFA42A2C59BABA6339F7D4"
+                  ExeCommand="" />
+    <InstallExecuteSequence>
+      <Custom Action="EXECUTE_AFTER_FINALIZE" After="InstallFinalize">NOT Installed</Custom>
+    </InstallExecuteSequence>
+  </Product>
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="ManufactureDIR" Name="$(var.Manufacturer)">
+          <Directory Id="INSTALLFOLDER" Name="$(var.ProductName)" />
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+  <Fragment>
+    <ComponentGroup Id="setupGroup" Directory="INSTALLFOLDER">
+      <Component Id="serviceInstaller" Guid="cc3cb44a-6c60-45a0-a5a8-fd1eb10656b7">
+        <File Id="up2DateService" Name="$(var.Up2dateService.TargetFileName)" DiskId="1"
+              Source="$(var.Up2dateService.TargetPath)" Vital="yes" KeyPath="yes" />
+        <ServiceInstall Id="UP2DATEService" Type="ownProcess" Vital="yes" Name="UP2DATEService"
+                        DisplayName="UP2DATE Service" Description="RITMS UP2DATE Service" Start="auto"
+                        Account="LocalSystem" ErrorControl="normal" Arguments=" /start UP2DATEService" Interactive="no" />
+        <ServiceControl Id="StartService" Stop="both" Start="install" Remove="uninstall" Name="UP2DATEService"
+                        Wait="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
