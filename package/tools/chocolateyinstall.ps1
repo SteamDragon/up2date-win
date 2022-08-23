@@ -1,4 +1,4 @@
-﻿
+
 $ErrorActionPreference = 'Stop';
 $toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 $packageArgs = @{
@@ -20,6 +20,20 @@ $packageArgs = @{
 }
 
 Install-ChocolateyPackage @packageArgs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
