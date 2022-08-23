@@ -59,6 +59,27 @@ jobs:
       - name: Build solution
         shell: cmd
         run: devenv "%SLN_PATH%" /build "Release"
+        
+      - name: Prepare Choco Package
+        uses: Amadevus/pwsh-script@v2.0.1
+        with:
+          script: |
+            Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+            cd ./package/
+            cp ${{ env.ARTIFACTS_PATH_X32 }}\Up2dateSetup32.msi .\tools\
+            cp ${{ env.ARTIFACTS_PATH_X64 }}\Up2dateSetup64.msi .\tools\
+            $content=(Get-Content -path .\\tools\\chocolateyinstall.ps1 -Raw)
+            $checksum=(checksum -t sha256 -f .\\tools\\Up2dateSetup32.msi)
+            $replaceTo="checksum      = '$checksum'"
+            $replaced=$content -replace 'checksum      = ''(.*)''',$replaceTo
+            $checksum=(checksum -t sha256 -f .\\tools\\Up2dateSetup64.msi)
+            $content=$replaced
+            $replaceTo="checksum64    = '$checksum'"
+            $replaced=$content -replace 'checksum64    = ''(.*)''',$replaceTo
+            echo $replaced | Set-Content -Path .\\tools\\chocolateyinstall.ps1
+            choco pack
+            
+            
 
       - name: Upload x64 artifacts
         uses: actions/upload-artifact@v3
@@ -71,6 +92,13 @@ jobs:
         with:
           name: x86
           path: ${{ env.ARTIFACTS_PATH_X32 }}
+          
+
+      - name: Upload choco package artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: .\packages\*.nupkg
+          
 
       - name: Upload Test artifacts
         uses: actions/upload-artifact@v3
