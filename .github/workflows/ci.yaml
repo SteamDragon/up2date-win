@@ -8,19 +8,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  #build:
-  #  uses: ./.github/workflows/build.yaml
+  build:
+    uses: ./.github/workflows/build.yaml
 
-  #test:
-  #  needs: build
-  #  uses: ./.github/workflows/test.yaml
+  test:
+    needs: build
+    uses: ./.github/workflows/test.yaml
 
   pack:
-  #  needs: test
+    needs: build
     uses: ./.github/workflows/package.yaml
 
-  #release:
-  #  needs: pack
-  #  if: startsWith(github.ref, 'refs/tags/v')
-  #  uses: ./.github/workflows/release.yaml
+  release:
+    needs: pack,test
+    if: startsWith(github.ref, 'refs/tags/v')
+    uses: ./.github/workflows/release.yaml
 
