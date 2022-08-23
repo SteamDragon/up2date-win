@@ -66,10 +66,8 @@ jobs:
           script: |
             Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
             cd ./package/
-            ls ${{ env.ARTIFACTS_PATH_X32 }}
-            ls ${{ env.ARTIFACTS_PATH_X64 }}
-            cp ${{ env.ARTIFACTS_PATH_X32 }}Up2dateSetup32.msi .\tools\
-            cp ${{ env.ARTIFACTS_PATH_X64 }}Up2dateSetup64.msi .\tools\
+            cp ../${{ env.ARTIFACTS_PATH_X32 }}Up2dateSetup32.msi .\tools\
+            cp ../${{ env.ARTIFACTS_PATH_X64 }}Up2dateSetup64.msi .\tools\
             $content=(Get-Content -path .\\tools\\chocolateyinstall.ps1 -Raw)
             $checksum=(checksum -t sha256 -f .\\tools\\Up2dateSetup32.msi)
             $replaceTo="checksum      = '$checksum'"
