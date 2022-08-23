@@ -52,14 +52,6 @@ jobs:
         run: .\DisableOutOfProcBuild.exe
         working-directory: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild
 
-      #- name: Restore packages
-      #  shell: cmd
-      #  run: msbuild "%SLN_PATH%" /t:restore /p:RestorePackagesConfig=true
-
-     # - name: Build solution
-     #   shell: cmd
-      #  run: devenv "%SLN_PATH%" /build "Release"
-        
       - name: Prepare Choco Package
         uses: Amadevus/pwsh-script@v2.0.1
         with:
@@ -68,9 +60,6 @@ jobs:
             cd ./package/
             ls ./
             ls ./tools/
-          #  cp ../${{ env.ARTIFACTS_PATH_X32 }}Up2dateSetup32.msi .\tools\
-          #  cp ../${{ env.ARTIFACTS_PATH_X64 }}Up2dateSetup64.msi .\tools\
-            ls ./tools
             $content=(Get-Content -path .\\tools\\chocolateyinstall.ps1 -Raw)
             $checksum=(checksum -t sha256 -f .\\tools\\Up2dateSetup32.msi)
             $replaceTo="checksum      = '$checksum'"
