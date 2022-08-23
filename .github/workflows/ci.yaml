@@ -15,8 +15,12 @@ jobs:
     needs: build
     uses: ./.github/workflows/test.yaml
 
+  pack:
+    needs: test
+    uses: ./.github/workflows/package.yaml
+
   release:
-    needs: build
+    needs: pack
     if: startsWith(github.ref, 'refs/tags/v')
     uses: ./.github/workflows/release.yaml
 

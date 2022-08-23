@@ -1,0 +1,58 @@
+name: Create.Packages
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  package:
+    name: Create Packages
+    runs-on: windows-2022
+    
+    steps:        
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Make download folder
+        shell: bash
+        run: mkdir artifacts
+
+      - name: Insall Checksum with choco
+        uses: crazy-max/ghaction-chocolatey@v2.0.0
+        with: 
+          args: install checksum
+
+      - name: Prepare Install Script
+        shell: powershell
+        run: |
+          $content=(Get-Content -path .\tools\chocolateyinstall.ps1 -Raw)
+          $checksum=(checksum -t sha256 -f .\tools\Up2dateSetup32.msi)
+          $replaceTo="checksum      = '$checksum'"
+          $replaced=$content -replace 'checksum      = ''(.*)''',$replaceTo
+          $checksum=(checksum -t sha256 -f .\tools\\Up2dateSetup64.msi)
+          $content=$replaced
+          $replaceTo="checksum64    = '$checksum'"
+          $replaced=$content -replace 'checksum64    = ''(.*)''',$replaceTo
+          echo $replaced | Set-Content -Path .\\tools\\chocolateyinstall.ps1
+        working-directory: .\up2date-win\package\
+
+      - name: Pack Choco NUPKG
+        shell: powershell
+        run: choco pack
+        working-directory: .\up2date-win\package\
+
+      - name: Check if Package Created
+        shell: powershell
+        run: |
+          Test-Path -Path *.nupkg -PathType Leaf
+          ls .\
+        working-directory: .\up2date-win\package\      
+
+      - name: Upload nupkg
+        uses: actions/upload-artifact@v3
+        with:
+          path: .\up2date-win\package\*.nupkg
+
+
+
+        
+
