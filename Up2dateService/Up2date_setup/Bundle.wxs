@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Bundle Name="Up2date_setup" Version="1.0.0.0" Manufacturer="" UpgradeCode="b56da605-236b-4b27-904e-fd4783e40c94">
+		<BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense" />
+
+		<Chain>
+			<MsiPackage Source="../"
+    </Chain>
+	</Bundle>
+</Wix>

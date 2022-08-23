@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
   <?define ProductName="RITMS UP2DATE Client" ?>
   <?define ProductVersion="1.0.3" ?>
   <?define ProductCode="cc55bc63-b006-4a34-bd67-03d78fe5d4ea"?>
@@ -8,16 +8,18 @@
   <?define Manufacturer="RTSoft"?>
   <Product Id="$(var.ProductCode)" Name="$(var.ProductName)" Language="1033" Version="$(var.ProductVersion)"
            Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.UpgradeCode)">
-    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated"/>
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
+    <Property Id="MSIUSEREALADMINDETECTION" Value="1"/>
+    <PropertyRef Id="NETFRAMEWORK47"/>
     <Feature Id="UP2DATEConsole" Title="UP2DATE Console" Level="1">
       <ComponentGroupRef Id="HeatGeneratedConsole" />
     </Feature>
     <Feature Id="UP2DATEService" Title="UP2DATE Service" Level="1">
       <ComponentGroupRef Id="HeatGeneratedService" />
     </Feature>
-    <Feature Id="UP2DATEServiceInstall" Title="UP2DATEService Install" Level="1">
+    <Feature Id="UP2DATEServiceInstall" Title="UP2DATEService Install" Level="1" >
       <ComponentGroupRef Id="setupGroup" />
     </Feature>
     <Icon Id="icon.ico" SourceFile="..\..\Up2dateService\Logo.ico" />

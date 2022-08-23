@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+  <?define ProductName="RITMS UP2DATE Client" ?>
+  <?define ProductVersion="1.0.3" ?>
+  <?define ProductCode="cc55bc63-b006-4a34-bd67-03d78fe5d4ea"?>
+  <?define UpgradeCode="ed7daba2-02ad-46d3-87b0-7bcf80b17586"?>
+  <?define Manufacturer="RTSoft"?>
+  <Bundle Name="$(var.ProductName)" Version="$(var.ProductVersion)" Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.UpgradeCode)">
+		<BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense" />
+    <bal:Condition Message="You're not elevated.">
+      WixBundleElevated = 1
+    </bal:Condition>
+    <Chain>
+      <PackageGroupRef Id="NetFx47Redist"/>
+      <MsiPackage SourceFile="..\setup32\bin\Release\Up2DateSetup.msi" After="NetFx47Redist"/>
+      <!-- TODO: Define the list of chained packages. -->
+			<!-- <MsiPackage SourceFile="path\to\your.msi" /> -->
+		</Chain>
+	</Bundle>
+</Wix>
