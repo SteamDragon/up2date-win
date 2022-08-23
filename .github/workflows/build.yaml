@@ -65,8 +65,8 @@ jobs:
         with:
           script: |
             Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-            cd ./package/
             choco install checksum
+            cd ./package/
             cp ../${{ env.ARTIFACTS_PATH_X32 }}Up2dateSetup32.msi .\tools\
             cp ../${{ env.ARTIFACTS_PATH_X64 }}Up2dateSetup64.msi .\tools\
             $content=(Get-Content -path .\\tools\\chocolateyinstall.ps1 -Raw)
