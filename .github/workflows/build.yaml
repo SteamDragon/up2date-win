@@ -66,8 +66,11 @@ jobs:
           script: |
             choco install checksum
             cd ./package/
+            ls
+            ls ./tools/
             cp ../${{ env.ARTIFACTS_PATH_X32 }}Up2dateSetup32.msi .\tools\
             cp ../${{ env.ARTIFACTS_PATH_X64 }}Up2dateSetup64.msi .\tools\
+            ls ./tools
             $content=(Get-Content -path .\\tools\\chocolateyinstall.ps1 -Raw)
             $checksum=(checksum -t sha256 -f .\\tools\\Up2dateSetup32.msi)
             $replaceTo="checksum      = '$checksum'"
@@ -78,6 +81,7 @@ jobs:
             $replaced=$content -replace 'checksum64    = ''(.*)''',$replaceTo
             echo $replaced | Set-Content -Path .\\tools\\chocolateyinstall.ps1
             choco pack
+            ls
             
             
 
