@@ -16,7 +16,7 @@ namespace Up2dateService.SetupManager
         private const string ExternalInstallLog = "install.out";
         private const string Up2DateChocoId = "up2date";
 
-        private const int MillisecondsToWait = 1000;
+        private const int MillisecondsToWait = 10000;
 
         private const int MsiExecResult_Success = 0;
         private const int MsiExecResult_RestartNeeded = 3010;
@@ -43,6 +43,7 @@ namespace Up2dateService.SetupManager
             this.downloadLocationProvider = downloadLocationProvider ?? throw new ArgumentNullException(nameof(downloadLocationProvider));
             this.settingsManager = settingsManager ?? throw new ArgumentNullException(nameof(settingsManager));
             certificateManager = manager;
+            ChocoHelper.RefreshBuffer();
             RefreshPackageList();
         }
 
@@ -95,7 +96,7 @@ namespace Up2dateService.SetupManager
                     {
                         return !ChocoHelper.IsChocoInstalled()
                             ? InstallPackageStatus.ChocoNotInstalled
-                            : InstallChocoNupkg(package);
+                            : InstallChocoNupkgAsync(package).Result;
                     }
                     catch (Exception exception)
                     {
@@ -120,6 +121,7 @@ namespace Up2dateService.SetupManager
                 Status = PackageStatus.Downloading,
                 Filepath = Path.Combine(downloadLocationProvider(), artifactFileName)
             };
+
             SafeAddOrUpdatePackage(package);
         }
 
@@ -130,54 +132,61 @@ namespace Up2dateService.SetupManager
             RefreshPackageList();
         }
 
-        private InstallPackageStatus InstallChocoNupkg(Package package)
+        private Task<InstallPackageStatus> InstallChocoNupkgAsync(Package package)
         {
-            if (!ChocoHelper.IsChocoInstalled())
-            {
-                return InstallPackageStatus.ChocoNotInstalled;
-            }
+                if (!ChocoHelper.IsChocoInstalled())
+                {
+                    return Task.FromResult(InstallPackageStatus.ChocoNotInstalled);
+                }
 
-            string logDirectory = downloadLocationProvider() + @"\install\";
-            try
-            {
-                if (Directory.Exists(logDirectory)) Directory.Delete(logDirectory, true);
+                string logDirectory = downloadLocationProvider() + @"\install\";
+                try
+                {
+                    if (Directory.Exists(logDirectory)) Directory.Delete(logDirectory, true);
 
-                Directory.CreateDirectory(logDirectory);
-            }
-            catch (Exception exception)
-            {
-                WriteLogEntry(exception);
-                return InstallPackageStatus.TempDirectoryFail;
-            }
+                    Directory.CreateDirectory(logDirectory);
+                }
+                catch (Exception exception)
+                {
+                    WriteLogEntry(exception);
+                    return Task.FromResult(InstallPackageStatus.TempDirectoryFail);
+                }
 
-            try
-            {
-                ChocoNugetInfo nugetInfo = ChocoNugetInfo.GetInfo(package.Filepath);
-                package.ProductCode = nugetInfo.Id;
-                package.DisplayVersion = nugetInfo.Version;
-            }
-            catch (Exception exception)
-            {
-                WriteLogEntry(exception);
-                return InstallPackageStatus.InvalidChocoPackage;
-            }
+                try
+                {
+                    if (package.ProductCode == null || package.DisplayVersion == null)
+                    {
+                        ChocoNugetInfo nugetInfo = ChocoNugetInfo.GetInfo(package.Filepath);
+                        if (nugetInfo.IsError)
+                        {
+                            throw nugetInfo.Error;
+                        }
 
-            try
-            {
-                ChocoHelper.InstallChocoPackage(package, logDirectory, downloadLocationProvider(), ExternalInstallLog);
-            }
-            catch (Exception exception)
-            {
-                WriteLogEntry(exception);
-                return InstallPackageStatus.PsScriptInvokeError;
-            }
+                        package.ProductCode = nugetInfo.Id;
+                        package.DisplayVersion = nugetInfo.Version;
+                    }
+                }
+                catch (Exception exception)
+                {
+                    WriteLogEntry(exception);
+                    return Task.FromResult(InstallPackageStatus.InvalidChocoPackage);
+                }
 
-            while (Process.GetProcessesByName("choco.exe").Length > 0)
-                Thread.Sleep(MillisecondsToWait);
-            
-            return ChocoHelper.IsPackageInstalled(package) == ChocoPackageInstallationStatus.ChocoPackageInstalled ?
-                InstallPackageStatus.Ok :
-                InstallPackageStatus.FailedToInstallChocoPackage;
+                try
+                {
+                    ChocoHelper.InstallChocoPackage(package, logDirectory, downloadLocationProvider(),
+                        ExternalInstallLog);
+                }
+                catch (Exception exception)
+                {
+                    WriteLogEntry(exception);
+                    return Task.FromResult(InstallPackageStatus.PsScriptInvokeError);
+                }
+
+                ChocoHelper.RefreshBuffer();
+                return Task.FromResult(ChocoHelper.IsPackageInstalled(package) == ChocoPackageInstallationStatus.ChocoPackageInstalled
+                    ? InstallPackageStatus.Ok
+                    : InstallPackageStatus.FailedToInstallChocoPackage);
         }
 
 
@@ -259,8 +268,12 @@ namespace Up2dateService.SetupManager
                     Package package = lockedPackages.FirstOrDefault(p =>
                         p.Filepath.Equals(inPackage, StringComparison.InvariantCultureIgnoreCase));
                     if (package.Status == PackageStatus.Unavailable) continue;
+                    if (Path.GetExtension(package.Filepath) == NugetExtension)
+                    {
+                        ChocoHelper.GetPackageInfo(ref package);
+                    }
 
-                    if (package.ProductName.Contains(Up2DateChocoId)) continue;
+                    //if (package.ProductCode.Contains(Up2DateChocoId)) continue;
                     package.ErrorCode = 0;
                     package.Status = PackageStatus.Installing;
 
@@ -268,7 +281,7 @@ namespace Up2dateService.SetupManager
                     int result = string.Equals(Path.GetExtension(package.Filepath),
                         NugetExtension,
                         StringComparison.InvariantCultureIgnoreCase)
-                        ? (int)InstallChocoNupkg(package)
+                        ? (int)InstallChocoNupkgAsync(package).Result
                         : InstallPackageAsync(package, CancellationToken.None).Result;
 
                     UpdatePackageStatus(ref package, result);
@@ -339,48 +352,67 @@ namespace Up2dateService.SetupManager
 
             foreach (string file in files)
             {
-                Package package = lockedPackages.FirstOrDefault(p => p.Filepath.Equals(file, StringComparison.InvariantCultureIgnoreCase));
-                if (!lockedPackages.Contains(package))
+                Package package = lockedPackages.FirstOrDefault(p =>
+                    p.Filepath.Equals(file, StringComparison.InvariantCultureIgnoreCase));
+                if (lockedPackages.Contains(package)) continue;
+                package.Filepath = file;
+                MsiInfo info = MsiHelper.GetInfo(file);
+                if (info != null)
                 {
-                    package.Filepath = file;
-                    MsiInfo info = MsiHelper.GetInfo(file);
                     package.ProductCode = info?.ProductCode;
                     package.ProductName = info?.ProductName;
                     lockedPackages.Add(package);
                     package.Status = PackageStatus.Downloaded;
+                }
+                else if (Path.GetExtension(package.Filepath) == NugetExtension)
+                {
+                        if (package.ProductCode == null || package.ProductName == null)
+                        {
+                            ChocoNugetInfo nugetInfo = ChocoNugetInfo.GetInfo(package.Filepath);
+                            if (nugetInfo.IsError)
+                            {
+                                continue;
+                            }
+
+                            package.ProductCode = nugetInfo?.Id;
+                            package.ProductName = nugetInfo?.Title;
+                        }
+
+                        lockedPackages.Add(package);
+                        package.Status = PackageStatus.Downloaded;
                 }
             }
 
             ProductInstallationChecker installationChecker = new ProductInstallationChecker();
 
 
-            for (int i = 0; i < lockedPackages.Count; i++)
-            {
-                Package updatedPackage = lockedPackages[i];
-                if (installationChecker.IsPackageInstalled(updatedPackage))
+                for (int i = 0; i < lockedPackages.Count; i++)
                 {
-                    installationChecker.UpdateInfo(ref updatedPackage);
-                    updatedPackage.Status = PackageStatus.Installed;
-                }
-                else
-                {
-                    updatedPackage.DisplayName = null;
-                    updatedPackage.Publisher = null;
-                    updatedPackage.DisplayVersion = null;
-                    updatedPackage.Version = null;
-                    updatedPackage.InstallDate = null;
-                    updatedPackage.EstimatedSize = null;
-                    updatedPackage.UrlInfoAbout = null;
-                    if (updatedPackage.Status != PackageStatus.Downloading && updatedPackage.Status != PackageStatus.Installing)
+                    Package updatedPackage = lockedPackages[i];
+                    if (installationChecker.IsPackageInstalled(updatedPackage))
                     {
-                        updatedPackage.Status = PackageStatus.Downloaded;
+                        installationChecker.UpdateInfo(ref updatedPackage);
+                        updatedPackage.Status = PackageStatus.Installed;
                     }
+                    else
+                    {
+                        updatedPackage.DisplayName = null;
+                        updatedPackage.Publisher = null;
+                        updatedPackage.DisplayVersion = null;
+                        updatedPackage.Version = null;
+                        updatedPackage.InstallDate = null;
+                        updatedPackage.EstimatedSize = null;
+                        updatedPackage.UrlInfoAbout = null;
+                        if (updatedPackage.Status != PackageStatus.Downloading && updatedPackage.Status != PackageStatus.Installing)
+                        {
+                            updatedPackage.Status = PackageStatus.Downloaded;
+                        }
+                    }
+
+                    lockedPackages[i] = updatedPackage;
                 }
 
-                lockedPackages[i] = updatedPackage;
-            }
-
-            SafeUpdatePackages(lockedPackages);
+                SafeUpdatePackages(lockedPackages);
         }
 
         private void WriteLogEntry(Exception error)

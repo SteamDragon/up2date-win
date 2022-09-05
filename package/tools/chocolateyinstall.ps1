@@ -8,7 +8,7 @@ $packageArgs = @{
   file           = Get-Item $toolsDir\Up2dateSetup32.msi
   file64           = Get-Item $toolsDir\Up2dateSetup64.msi
 
-  softwareName  = '*Up2date*'
+  softwareName  = 'RITMS UP2DATE Client'
 
   checksum      = '2CE42C49EDA71DA2311AAB9A773BD88FDD306FBF697F56ED243C0F930261E77E'
   checksumType  = 'sha256'
@@ -21,10 +21,11 @@ $packageArgs = @{
 
 
 [array]$key = Get-UninstallRegistryKey -SoftwareName $packageArgs['softwareName']
-
-if ($key.Count -eq 1) {
-  Stop-Service -Name "Up2dateService"
-  sc.exe delete Up2dateService
+echo "Key Count: " + $key.Count
+if ($key.Count -gt 0) {
+	try {Stop-Service -Name "Up2dateService"} catch { echo "Service Was Not Stopped" }
+	try {  sc.exe delete Up2dateService } catch { echo "Service Was Not Deleted" }
+	try {  Stop-Process -Name "Up2dateConsole" } catch { echo "Console Was Not Closed" }  
 }
 
 Install-ChocolateyPackage @packageArgs

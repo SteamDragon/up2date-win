@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Up2dateShared;
 
@@ -42,15 +43,14 @@ namespace Up2dateService.SetupManager
 
         public bool IsPackageInstalled(Package package)
         {
-            if (package.ProductCode == null)
-            {
-                return false;
-            }
-
-            bool packageInstalled = productCodes.Concat(wow6432productCodes).Contains(package.ProductCode);
-            if (!packageInstalled)
+            bool packageInstalled;
+            if (Path.GetExtension(package.Filepath) == ".nupkg")
             {
                 packageInstalled = ChocoHelper.IsPackageInstalled(package) == ChocoPackageInstallationStatus.ChocoPackageInstalled;
+            }
+            else
+            {
+                packageInstalled = productCodes.Concat(wow6432productCodes).Contains(package.ProductCode);
             }
 
             return packageInstalled;
